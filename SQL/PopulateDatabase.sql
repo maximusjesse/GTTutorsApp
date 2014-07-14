@@ -9,6 +9,9 @@ Values(987654321, 'grad')
 Values(902803967, 'junior17')
 Values(000000000, 'admin')
 Values(123456789, 'prof')
+Values(902928313, 'pink')
+Values(902000000, 'hey')
+Values(903000000, 'ok')
 
 INSERT INTO Grad
 Values(987654321, 'grad@gatech.edu')
