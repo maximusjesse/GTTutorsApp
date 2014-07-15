@@ -10,7 +10,7 @@ class Gui():
     def __init__(self,win):
 
         self.page1=win
-        self.TutorsPage(win)
+        self.MainMenu(win)
         self.page2=Toplevel()
         self.page2.withdraw()
 
@@ -97,7 +97,8 @@ class Gui():
 
 
     def Connect(self):
-        db=pymysql.connect(host='academic-mysql.cc.gatech.edu',db='cs4400',user='yzheng88',passwd='BCBgVE2V')
+        try:
+            db=pymysql.connect(host='academic-mysql.cc.gatech.edu',db='cs4400_Group_14',user='cs4400_Group_14',passwd='GdGw3XSz')
             return(db)
         except:
             messagebox.showwarning('Error','Could not connect. Please try again.')
