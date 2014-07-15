@@ -16,5 +16,5 @@ class table:
     
 rootWin=Tk()
 rootWin.title("table")
-myObj=HW5(rootWin)
+myObj=table(rootWin)
 rootWin.mainloop()
