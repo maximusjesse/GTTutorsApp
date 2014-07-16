@@ -28,7 +28,10 @@ VALUES(000000000,'admin'),
 (000001400,'prof4')
 
 INSERT INTO Grad
-Values(987654321, 'grad@gatech.edu')
+Values(000000110, 'grad1@gatech.edu'),
+(000000120, 'grad2@gatech.edu'),
+(000000130, 'grad3@gatech.edu'),
+(000000140, 'grad4@gatech.edu')
 
 INSERT INTO Undergrad
 Values(888888888)
