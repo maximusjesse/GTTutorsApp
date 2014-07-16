@@ -25,7 +25,7 @@ CREATE TABLE Professor (
 CREATE TABLE Grad (
 	GradID Integer(9) NOT NULL,
 	Email VARCHAR(30) PRIMARY KEY,
-	FOREIGN KEY (GradID) REFERENCES User(Gtid), 
+	FOREIGN KEY (GradID) REFERENCES User(Gtid),
 	FOREIGN KEY (Email) REFERENCES Student(Email)
 )
 
@@ -65,6 +65,8 @@ CREATE TABLE Rates (
 	DescEvaluation VarChar(200),
 	Semester VarChar(30),
 	Primary Key(StudentID, School, Number),
+    Foreign Key(TutorID) REFERENCES TutorTimeSlots(TutorID),
+    Foreign Key(Semester) REFERENCES TutorTimeSlots(Semester),
 	Foreign Key (StudentID) REFERENCES User(Gtid)
 )
 
@@ -73,6 +75,9 @@ CREATE TABLE Tutors (
 	School VarChar(30) NOT NULL,
 	Number Integer(4) NOT NULL,
 	StudentID Integer(9),
+    Foreign Key(TutorID) REFERENCES Student(StudentID),
+    Foreign Key(School) REFERENCES Course(School),
+    Foreign Key(Number) REFERENCES Course(Number),
 	Primary Key(TutorID, School, Number)
 )
 
