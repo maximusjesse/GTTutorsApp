@@ -7,14 +7,11 @@ import sqlite3
 
 class Gui():
 
+#########################################################################
+#This is the initial login screen
+
+
     def __init__(self,win):
-
-        self.page1=win
-        self.MainMenu(win)
-        self.page2=Toplevel()
-        self.page2.withdraw()
-
-    def LoginPage(self,win):
 
         url = "http://espn.go.com/i/teamlogos/ncaa/med/trans/59.gif"
         response = urllib.request.urlopen(url)
@@ -26,7 +23,9 @@ class Gui():
 
         l = Label(win, image=self.photo)
         l.grid(row=0,columnspan=3,sticky=EW)
-        
+
+        win.title('GTT Login')
+
         l1=Label(win,text='Enter GTID')
         l1.grid(row=1,column=0,sticky=E)
         l2=Label(win,text='Enter Password')
@@ -38,8 +37,6 @@ class Gui():
         self.e2=Entry(win,state='normal', width=30)
         self.e2.grid(row=3,column=1)
 
-        win.title('GTT Login')
-
         l3=Label(win,text='')
         l3.grid(row=4,column=0,sticky=W)
 
@@ -48,6 +45,50 @@ class Gui():
 
         b1=Button(win,text='Ok', width=15, command=self.Login)
         b1.grid(row=5,columnspan=2)
+        
+#############################################################################
+#Connects to the database 
+
+    def Connect(self):
+        try:
+            db=pymysql.connect(host='academic-mysql.cc.gatech.edu',db='cs4400_Group_14',user='cs4400_Group_14',passwd='GdGw3XSz')
+            return(db)
+        except:
+            messagebox.showwarning('Error','Could not connect. Please try again.')
+        
+#############################################################################
+
+    def Login(self):
+        gtid=self.e1.get() #Retrieves GTID from e1
+        pw=self.e2.get() #Retrieves password from e2
+        db=self.Connect() #connects to database
+
+        if gtid == "":
+                messagebox.showwarning("GTID?", "Please enter a username.")
+        elif pw == "":
+                messagebox.showwarning("Password?", "Please enter a password.")
+        
+        else:
+            cursor = db.cursor()
+            query = ("SELECT Gtid FROM User WHERE Gtid=(%s)")
+            query2=("SELECT Password FROM USER WHERE Gtid=(%s)")
+            
+            cursor.execute(query,gtid)
+            
+            cursor.execute(query2,pw)
+            
+            aList=[]
+            for item in cursor:
+                aList.append(item)                
+            bList=[]
+            for items in aList:
+                bList.append(items[0])
+        finally:
+            db.close()
+        if len(bList)==0:
+            messagebox.showwarning('Error','Incorrect GTID or password. Please try again.')
+        else:
+            win.destroy()
 
     def MainMenu(self,win):
 
@@ -96,34 +137,6 @@ class Gui():
         t1.pack()
 
 
-    def Connect(self):
-        try:
-            db=pymysql.connect(host='academic-mysql.cc.gatech.edu',db='cs4400_Group_14',user='cs4400_Group_14',passwd='GdGw3XSz')
-            return(db)
-        except:
-            messagebox.showwarning('Error','Could not connect. Please try again.')
-        
-
-    def Login(self):
-        user=self.e1.get()
-        p1=self.e2.get()
-        db=self.Connect()
-        try:
-            cursor = db.cursor()
-            sql = "SELECT * from User where GTID=%s and Password=%s"
-            cursor.execute(sql,(user,p1))
-            aList=[]
-            for item in cursor:
-                aList.append(item)                
-            bList=[]
-            for items in aList:
-                bList.append(items[0])
-        finally:
-            db.close()
-        if len(bList)==0:
-            messagebox.showwarning('Error','Incorrect GTID or password. Please try again.')
-        else:
-            win.destroy()
             
 
             
