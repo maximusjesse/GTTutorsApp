@@ -314,21 +314,57 @@ class Gui():
     def ScheduleTutorPage(self):
         #Figure 4
 
-        win.title('Schedule a Tutor')
+         L1= Label(win, text='Select your Tutor for CS 4400')
+        L1.grid(row=0, column=3, columnspan=2, sticky=EW)
 
-        l1=Label(win,text='Select a Tutor your Course')
-        l1.grid(row=0,column=0,sticky=EW)
+        e1 = Entry(relief=RIDGE)
+        e1.grid(row=1, column=1, sticky=NSEW)
+        e1.insert(END, 'First Name')
+        e1.config(state="readonly")
+        e2= Entry(relief=RIDGE)
+        e2.grid(row=1, column=2, sticky=NSEW)
+        e2.insert(END, 'Last Name')
+        e2.config(state="readonly")
+        e2= Entry(relief=RIDGE)
+        e2.grid(row=1, column=3, sticky=NSEW)
+        e2.insert(END, 'Email')
+        e2.config(state="readonly")
+        e2= Entry(relief=RIDGE)
+        e2.grid(row=1, column=4, sticky=NSEW)
+        e2.insert(END, 'Day')
+        e2.config(state="readonly")
+        e2= Entry(relief=RIDGE)
+        e2.grid(row=1, column=5, sticky=NSEW)
+        e2.insert(END, 'Time')
+        e2.config(state="readonly")
+        e2= Entry(relief=RIDGE)
+        e2.grid(row=1, column=6, sticky=NSEW)
+        e2.insert(END, 'Select')
+        e2.config(state="readonly")
 
-        ##Need code for a table here
+        
+        for i in range(6):
+            e = Entry(relief=RIDGE)
+            for j in range(6):
+                if j<5:
+                    e = Entry(relief=RIDGE)
+                    e.grid(row=i+2, sticky=NSEW)
+                    e.insert(END, '%d' %i)
+                    e.grid(column=j+1, sticky=NSEW)
+                    e.insert(END, '%d' %j)
+                if j==4:
+                    self.v=IntVar()
 
-        l2=Label(win,text='NOTE: Only one box under the select column may be checked')
-        l2.grid(row=2,column=0,sticky=W,pady=20, padx=30)
+                    r1= Radiobutton(win, variable=self.v, value=i+2)
+                    r1.grid(row=i+2, column=j+2)
 
-        b2=Button(win, text="Ok")
-        b2.grid(row=3,column=0,sticky=W,ipadx=5,pady=20,padx=30)
-        b3=Button(win, text="Cancel", width=5)
-        b3.grid(row=3,column=0,sticky=W,pady=20,padx=100)
+        L1= Label(win, text='NOTE: Only 1 box under the Select column may be checked')
+        L1.grid(row=9, column=3, columnspan=2, sticky=EW)
 
+        B1=Button(win, text="OK", width=15)
+        B1.grid(row=10, column=1)
+        B2=Button(win, text="Cancel", width=15)
+        B2.grid(row=10, column=3, sticky=W)
         
 ##############################################################################                
 
