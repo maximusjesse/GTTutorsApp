@@ -1,14 +1,15 @@
 
 from tkinter import *
 import urllib.request
-from re import findall
 import pymysql
-import sqlite3
+
+
+
 
 class Gui():
 
 #########################################################################
-#This is the initial login screen
+#This is the initial login window
 
 
     def __init__(self,win):
@@ -69,26 +70,26 @@ class Gui():
                 messagebox.showwarning("Password?", "Please enter a password.")
         
         else:
-            cursor = db.cursor()
+            cursor = self.db.cursor()
             query = ("SELECT Gtid FROM User WHERE Gtid=(%s)")
-            query2=("SELECT Password FROM USER WHERE Gtid=(%s)")
+            query2=("SELECT Password FROM User WHERE Gtid=(%s)")
             
-            cursor.execute(query,gtid)
+            user=cursor.execute(query,gtid)
+
+            password=cursor.execute(query2,pw)
+
+            cursor.close()
+            self.db.commit()
+            self.db.close()
             
-            cursor.execute(query2,pw)
-            
-            aList=[]
-            for item in cursor:
-                aList.append(item)                
-            bList=[]
-            for items in aList:
-                bList.append(items[0])
-        finally:
-            db.close()
-        if len(bList)==0:
-            messagebox.showwarning('Error','Incorrect GTID or password. Please try again.')
-        else:
-            win.destroy()
+            if user == 0:
+                messagebox.showwarning("Username?", "This username is not in the database, please choose a different username, or select 'New User'")
+            elif password != pw:
+                messagebox.showwarning("Password?", "This password does not match the password in the database for this username. Please try again.")
+            else:
+                self.MainMenu()
+
+##############################################################################                
 
     def MainMenu(self,win):
 
