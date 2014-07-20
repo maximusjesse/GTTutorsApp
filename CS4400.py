@@ -73,6 +73,7 @@ class Gui():
         
         else:
             cursor = self.db.cursor()
+<<<<<<< HEAD
             sql1 = "SELECT * FROM User WHERE Gtid = %s and Password = %s"
             cursor.execute(sql1,(gtid,pw))
             userNameList = []
@@ -91,6 +92,25 @@ class Gui():
             self.db.commit()
             self.db.close()
 
+=======
+            query = ("SELECT Gtid FROM User WHERE Gtid=(%s)")
+            query2=("SELECT Password FROM User WHERE Gtid=(%s)")
+            
+            user=cursor.execute(query,gtid)
+
+            password=cursor.execute(query2,pw)
+
+            cursor.close()
+            self.db.commit()
+            self.db.close()
+            
+            if user == 0:
+                messagebox.showwarning("Username?", "This username is not in the database, please choose a different username, or select 'New User'")
+            elif password != pw:
+                messagebox.showwarning("Password?", "This password does not match the password in the database for this username. Please try again.")
+            else:
+                self.MainMenu()
+>>>>>>> origin/master
 
 ##############################################################################                
 
@@ -132,6 +152,7 @@ class Gui():
         b8=Button(win,text='Exit',command=self.Exit)
         b8.grid(row=10,column=0, sticky=W,pady=50,padx=30,ipadx=20)
 
+<<<<<<< HEAD
 ##############################################################################                
 
 
@@ -141,12 +162,64 @@ class Gui():
 
         win.title('Available Tutors')
         
+=======
+#EMILY ADDED THIS FROM HERE
+    def scroll(self, *args):
+        self.list1.yview(*args)
+        self.list2.yview(*args) 
+
+    def TutorsPage(self,win):
+>>>>>>> origin/master
         l1=Label(win,text='Course')
-        l1.grid(row=0,column=0,sticky=W,pady=20, padx=30)
+        l1.grid(row=0,column=0,sticky=W)
 
-        l2=Label(win,text='Availability Note: Tutor sessions can only be scheduled for 1 hour per week for a given course')
-        l2.grid(row=1,column=0,sticky=W,pady=20, padx=30)
+        e1 = Entry(relief=RIDGE)
+        e2= Entry(relief=RIDGE)
+                
+        e1.grid(row=0, column=1, sticky=NSEW)
+        e1.insert(END, 'School')
+        e1.config(state="readonly")
+        e2.grid(row=0, column=2, sticky=NSEW)
+        e2.insert(END, 'Number')
+        e2.config(state="readonly")
 
+        #first table
+        for i in range(1):
+            e = Entry(relief=RIDGE)
+            for j in range(2):
+                e = Entry(relief=RIDGE)
+                e.grid(row=i+1, sticky=NSEW)
+                e.insert(END, '%d' %i)
+                e.grid(column=j+1, sticky=NSEW)
+                e.insert(END, '%d' %j)
+
+        l3=Label(win,text='Availability: Note- tutor session can only be schedule for 1 hour per week for a given course')
+        l3.grid(row=4,column=0,columnspan=7, sticky=W)
+
+        #second table
+        e3 = Entry(relief=RIDGE)
+        e3.grid(row=5, column=1, sticky=NSEW)
+        e3.insert(END, 'Day')
+        e3.config(state="readonly")
+        e4= Entry(relief=RIDGE)
+        e4.grid(row=5, column=2, sticky=NSEW)
+        e4.insert(END, 'Time')
+        e4.config(state="readonly")
+
+        #Scroll bar
+        s = Scrollbar(win)
+        s.grid(row=4, column=3, rowspan=15, sticky=W)
+
+        self.list1 = Listbox(win, yscrollcommand = s.set )
+        self.list1.grid(row=6, column=1)
+
+        self.list2 = Listbox(win, yscrollcommand = s.set )
+        self.list2.grid(row=6, column=2, sticky=EW)
+        s.config( command=self.scroll )
+
+        
+
+<<<<<<< HEAD
         l3=Label(win,text='Available Tutors')
         l3.grid(row=4,column=0, sticky=EW)
 
@@ -161,6 +234,82 @@ class Gui():
         
 ##############################################################################                
 
+=======
+        rowz = []
+        for i in range(6):
+            col = []
+            for j in range(2):
+                self.list1.insert(END, "%d" %i)
+                self.list2.insert(END, "%d" %j)
+                col.append(self.list1)
+                
+##                e = Entry(relief=RIDGE)
+##                e.grid(row=i+6, sticky=NSEW)
+##                e.insert(END, '%d' %i)
+##                e.grid(column=j+1, sticky=NSEW)
+##                e.insert(END, '%d' %j)
+##                col.append(e)
+##            rowz.append(col)
+
+
+        b1=Button(win,width=8, text='OK')
+        b1.grid(row=12)
+
+        #third table
+        l5=Label(win,text='Available Tutors')
+        l5.grid(row=13,column=3)
+
+        e5 = Entry(relief=RIDGE)
+        e5.grid(row=14, column=0, sticky=NSEW)
+        e5.insert(END, 'First Name')
+        e5.config(state="readonly")
+        e6= Entry(relief=RIDGE)
+        e6.grid(row=14, column=1, sticky=NSEW)
+        e6.insert(END, 'Last Name')
+        e6.config(state="readonly")
+        e7 = Entry(relief=RIDGE)
+        e7.grid(row=14, column=2, sticky=NSEW)
+        e7.insert(END, 'Email')
+        e7.config(state="readonly")
+        e8= Entry(relief=RIDGE)
+        e8.grid(row=14, column=3, sticky=NSEW)
+        e8.insert(END, 'Avg Prof Rating')
+        e8.config(state="readonly")
+        e9 = Entry(relief=RIDGE)
+        e9.grid(row=14, column=4, sticky=NSEW)
+        e9.insert(END, '# Professors')
+        e9.config(state="readonly")
+        e10= Entry(relief=RIDGE)
+        e10.grid(row=14, column=5, sticky=NSEW)
+        e10.insert(END, 'Avg Student Rating')
+        e10.config(state="readonly")
+        e11= Entry(relief=RIDGE)
+        e11.grid(row=14, column=6, sticky=NSEW)
+        e11.insert(END, '# Students')
+        e11.config(state="readonly")
+
+        rowss = []
+        for i in range(5):
+            colu = []
+            e = Entry(relief=RIDGE)
+            for j in range(7):
+                e = Entry(relief=RIDGE)
+                e.grid(row=i+15, sticky=NSEW)
+                e.insert(END, '%d' %i)
+                e.grid(column=j, sticky=NSEW)
+                e.insert(END, '%d' %j)
+                colu.append(e)
+            rowss.append(colu)
+
+        l6=Label(win,text='                                               ')
+        l6.grid(row=20,column=0, columnspan=10)
+        b2=Button(win,width=20, text='Schedule a Tutor')
+        b2.grid(row=21, column=0, columnspan= 2, sticky=W)
+        b3=Button(win,width=20, text='Cancel')
+        b3.grid(row=21, column=2, sticky=W)
+        l7=Label(win,text='                                               ')
+        l7.grid(row=22,column=0, columnspan=10)
+>>>>>>> origin/master
 
     def ScheduleTutorPage(self):
         #Figure 4
