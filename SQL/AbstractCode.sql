@@ -22,24 +22,41 @@ AND Password=$Password
 	FROM User
 	WHERE Gtid=$Gtid
 	AND Password=$Password
+$Weekday=M
 
 /*Search Tutor*/
-Select TutorID
-From TutorTimeSlots
-Where $Weekday=TutorTimeSlots.Weekday
-And $Time=TutorTimeSlots.Time
-//With the TutorID, we can generate a tuple from view TutorInfo
-Select Name, Email, AvgProfRating, NumProfessors, AvgStudentRating, NumStudents
-From TutorInfo
-Where $ID=TutorInfo.TutorID
+Select Name, Email, ProfAvgRating, ProfNumRatings, StuAvgRating, StuNumRatings
+	FROM (
+	SELECT *
+	FROM Figure3
+	WHERE 'CS'=Figure3.School
+	AND 4400=Figure3.Number
+	AND 'W'=Figure3.Weekday
+	AND '14:00:00'=Figure3.Time
+) A
+#Figure4 Select Tutor
+Select Name, Email, Weekday, Time
+	FROM (
+	SELECT *
+	FROM Figure3
+	WHERE 'CS'=Figure3.School
+	AND 4400=Figure3.Number
+	AND 'W'=Figure3.Weekday
+	AND '14:00:00'=Figure3.Time
+) A
 
 /*Schedule Tutor*/
-UPDATE Tutors
-SET StudentId=$StudentUserID
-WHERE TutorID=$SelectedTutorID
+Update TutorTimeSlots 
+Set TuteeID=$Gtid
+Where TutorID= (
+				Select StudentID 
+				FROM Student 
+				Where Name=$TutorName
+				)
+AND Time=$Time
 
 /*Tutor Evaluation By Student*/
-INSERT INTO Ratesrates
+INSERT INTO Rates
 VALUES ($StudentUserID, $SelectedTutorID, $School, $Number, $NumEvaluation, $DescEvaluation, $Semester)
 
 /*Tutor Application*/
@@ -59,26 +76,19 @@ INSERT INTO Tutors
 Values ($ID, $School, $Number)
 //Choosing Times
 INSERT INTO TutorTimeSlots
-Values ($ID, $Time, $Semester, $Weekday)
+Values ($ID, $Time, $Semester, $Weekday, null, $School, $Number)
 
 /*Find Tutor Schedule*/
 SELECT Day, Time, Name, Email, Course
 FROM TutorSchedule
-WHERE 111111111=TutorSchedule.TutorID
+WHERE StudentID=$TutorID
 
 /*Prof Recommends Tutor*/
 INSERT INTO Recommends
 Value ($TutorID, $ProfessorID, $NumEvaluation, $DescEvaluation)
 
 /*Summary Report 1*/
-//Application will return either String for semester, or an incorrect string if unchecked
-//Use Summary1 View, which has null values for Semester where totals are present
-Select *
-From Summary1
-Where Semester=$Spring
-OR Semester=$Summer
-OR Semester=$Fall
-OR Semester IS NULL
+Select * from Summary
 
 /*Summary 2 Report*/
 //Similar to Summary 1, Uses Summary2 view, which null values in Semester for totals
