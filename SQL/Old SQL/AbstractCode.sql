@@ -56,6 +56,7 @@ Where TutorID= (
 AND Time=$Time
 
 /*Tutor Evaluation By Student*/
+SELECT EXISTS (Select * FROM TutorTimeSlots WHERE TuteeID=000000001 AND TutorID=(SELECT StudentID FROM Student WHERE Name='Grad 2t') AND School='ISYE' AND Number='3232')
 INSERT INTO Rates
 VALUES ($StudentUserID, $SelectedTutorID, $School, $Number, $NumEvaluation, $DescEvaluation, $Semester)
 
@@ -98,3 +99,18 @@ Where Semester=$Spring
 OR Semester=$Summer
 OR Semester=$Fall
 OR Semester IS NULL
+
+#Returns the boolean where Gtid exists
+SELECT EXISTS( SELECT * FROM Administrator WHERE AdminID=%s)
+SELECT EXISTS( SELECT * FROM Student WHERE StudentID=%s)
+SELECT EXISTS( SELECT * FROM Professor WHERE ProfessorID=%s)
+SELECT EXISTS( SELECT * FROM Tutor WHERE TutorID=%s)
+
+#Create Total Row for Given number of semesters
+SET @Fall='Fall',
+@Spring=NULL,
+@Summer='Summer';
+#Creates Course Total From Summary1
+SELECT Course, "Total", Sum(NumStudents), Sum(NumTutors) FROM Summary1 Group by Course;
+#Creates complete total from Summary1
+SELECT '~Total for all courses', '', Sum(NumStudents), Sum(NumTutors) FROM Summary1;

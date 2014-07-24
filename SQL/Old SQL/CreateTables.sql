@@ -1,5 +1,5 @@
 #SQL Create Tables
-Drop Table Administrator, Course, Grad, Professor, Rates, Recommends, Student, Tutor, Tutors, TutorTimeSlots, Undergrad, User, Summary;
+Drop Table IF EXISTS Administrator, Course, Grad, Professor, Rates, Recommends, Student, Tutor, Tutors, TutorTimeSlots, Undergrad, User, Summary;
 CREATE TABLE User (
 	Gtid INTEGER(9) PRIMARY KEY,
 	Password VARCHAR(30) NOT NULL
@@ -12,8 +12,8 @@ CREATE TABLE Administrator (
 
 CREATE TABLE Student (
 	StudentID INTEGER(9) PRIMARY KEY,
-	Email VARCHAR(30) NOT NULL,
-	Name VARCHAR(30) NOT NULL,
+	Email VARCHAR(30),
+	Name VARCHAR(30),
 	FOREIGN KEY (StudentID) REFERENCES User(Gtid)
 );
 
@@ -24,9 +24,8 @@ CREATE TABLE Professor (
 
 CREATE TABLE Grad (
 	GradID Integer(9) NOT NULL,
-	Email VARCHAR(30) PRIMARY KEY,
-	FOREIGN KEY (GradID) REFERENCES User(Gtid),
-	FOREIGN KEY (Email) REFERENCES Student(Email)
+	PRIMARY KEY (GradID),
+	FOREIGN KEY (GradID) REFERENCES User(Gtid)
 );
 
 CREATE TABLE Undergrad (
@@ -95,30 +94,48 @@ CREATE TABLE Recommends (
 );
 
 /*CREATED VIEWS*/
-Drop View Summary1, Summary2, TutorInfo, TutorSchedule, ProfessorRecs, StudentRecs, CombinedRecExtra, RecsTTS, Figure3;
+Drop View IF EXISTS Summary1, Summary2, TutorInfo, TutorSchedule, ProfessorRecs, StudentRecs, CombinedRecExtra, RecsTTS, Figure3;
+
+SET @Fall='Fall',
+@Spring=NULL,
+@Summer=NULL;
+DROP VIEW IF EXISTS Summary1;
+/*SELECT CONCAT(tts.School, CAST(tts.Number as char)) as 'Course', tts.Semester, Count(DISTINCT tts.TuteeID) as 'NumStudents', Count(DISTINCT tts.TutorID) as 'NumTutors'
+	FROM TutorTimeSlots tts
+	WHERE Semester='Fall'
+	OR Semester='Spring'
+	OR Semester=NULL
+	GROUP BY Course, Semester;*/
+
 CREATE VIEW Summary1 AS
-	SELECT CONCAT(tts.School, CAST(tts.Number as char)) as 'Course', tts.Semester, Count(tts.TuteeID) as 'NumStudents', Count(t.TutorID) as 'NumTutors'
-	FROM Tutors t, TutorTimeSlots tts
-	WHERE t.TutorID=tts.TutorID
-	Group by Course, Semester WITH ROLLUP;
+	SELECT CONCAT(tts.School, CAST(tts.Number as char)) as 'Course', tts.Semester, Count(DISTINCT tts.TuteeID) as 'NumStudents', Count(DISTINCT tts.TutorID) as 'NumTutors'
+	FROM TutorTimeSlots tts
+	WHERE Semester=@Fall
+	OR Semester=@Spring
+	OR Semester=@Summer
+	GROUP BY Course, Semester;
+#SELECT Course, 'Total', Sum(NumStudents), Sum(NumTutors) FROM Summary1 Group by Course;
+#SELECT '~Total for all courses', '', Sum(NumStudents), Sum(NumTutors) FROM Summary1;
 
-CREATE TABLE Summary 
-	As (
-	SELECT CONCAT(tts.School, CAST(tts.Number as char)) as 'Course', tts.Semester, Count(tts.TuteeID) as 'NumStudents', Count(t.TutorID) as 'NumTutors'
-	FROM Tutors t, TutorTimeSlots tts
-	WHERE t.TutorID=tts.TutorID
-	Group by Course, Semester WITH ROLLUP);
-Update Summary Set Semester="Total" Where LENGTH(Semester)<1;
-Update Summary s Set Course="GRAND" Where Course IS NULL;
-
+DROP VIEW IF Exists Summary2;
 CREATE VIEW Summary2 AS
+	SELECT CONCAT(r.School, CAST(r.Number as char)) as 'Course', r.Semester, Count(CASE WHEN t.GTA=True AND r.TutorID=t.TutorID THEN r.TutorID END) as 'TA', AVG(CASE WHEN t.GTA=TRUE AND t.TutorID=r.TutorID THEN r.NumEvaluation END) as 'AvgRatingTA', Count(CASE WHEN t.GTA=FALSE AND r.TutorID=t.TutorID THEN t.TutorID END) as 'nonTA', AVG(Case WHEN r.TutorID=t.TutorID and t.GTA=FALSE THEN r.NumEvaluation END) as 'AvgRatingNTA'
+	From Rates r, Tutors t
+	WHERE r.TutorID=t.TutorID
+	Group by Course, Semester;
+SELECT Course, '~Avg', '', Avg(AvgRatingTA), '', Avg(AvgRatingNTA) FROM Summary2 Group by Course;
+
+/*SELECT AVG(CASE WHEN r.TutorID=t.TutorID AND t.GTA=TRUE THEN r.Number END)
+	FROM Rates r, Tutors t;*/
+
+/*CREATE VIEW Summary2 AS
 	SELECT CONCAT(tts.School, CAST(tts.Number as char)) as 'Course', tts.Semester, Count(g.GradID) as 'TA', AVG(r.numEvaluation) as 'AvgRating', Count(u.undergradID) as 'nonTA', AVG(r2.numEvaluation) as 'AvgRating2'
 	FROM Tutors t, TutorTimeSlots tts, Grad g, Rates r, Undergrad u, Rates r2
 	WHERE t.TutorID=tts.TutorID
 	AND g.GradID=r.TutorID
 	AND u.UndergradID=r2.TutorID
 	Group by Course, Semester
-	Order by Course;
+	Order by Course;*/
 
 CREATE VIEW TutorInfo AS
 	SELECT s.Name, s.Email, Avg(r.NumEvaluation) as 'AvgProfRating', Count(distinct r.ProfessorID) as 'NumProfessors', Avg(ra.NumEvaluation) as 'AvgStudentRating', Count(distinct ra.StudentID) as 'NumStudents', s.StudentID as 'TutorID'
