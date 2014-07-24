@@ -44,7 +44,9 @@ VALUES(000000000,'admin'),
 (000001400,'prof4'),
 (100000000,'password'),
 (200000000,'password'),
-(300000000,'password');
+(300000000,'password'),
+(902827313,'password'),
+(902803967,'password');
 
 INSERT INTO Student
 VALUES
@@ -70,7 +72,9 @@ VALUES
 (000000150, 'grad5@gatech.edu', 'Grad 5'),
 (100000000, null, null),
 (200000000, null, null),
-(300000000, null, null);
+(300000000, null, null),
+(902827313, null, null),
+(902803967, null, null);
 
 INSERT INTO Grad
 Values(000000110),
