@@ -106,10 +106,15 @@ CREATE TABLE Hires (
 /*CREATED VIEWS*/
 Drop View IF EXISTS Summary1, Summary2, TutorInfo, TutorSchedule, ProfessorRecs, StudentRecs, CombinedRecExtra, RecsTTS, Figure3, TTS;
 
-CREATE VIEW TTS AS
+CREATE VIEW TTS as
 	SELECT *
-	FROM TutorTimeSlots
-	NATURAL join Hires;
+	FROM TutorTimeSlots tts
+	Natural Join Tutors;
+
+CREATE VIEW TTS2 as
+	SELECT *
+	FROM TTS
+	NATURAL JOIN Hires;
 
 CREATE VIEW TutorInfo AS
 	SELECT s.Name, s.Email, Avg(r.NumEvaluation) as 'AvgProfRating', Count(distinct r.ProfessorID) as 'NumProfessors', Avg(ra.NumEvaluation) as 'AvgStudentRating', Count(distinct ra.StudentID) as 'NumStudents', s.StudentID as 'TutorID'
@@ -118,9 +123,8 @@ CREATE VIEW TutorInfo AS
 	AND s.StudentID=ra.TutorID;
 
 CREATE VIEW TutorSchedule AS
-	SELECT TTS.Weekday as 'Day', TTS.Time, s.Name, s.Email, CONCAT(TTS.School, CAST(TTS.Number as char)) as 'Course', s.StudentID
-	From TTS, Student s
-	Where TTS.TutorID=s.StudentID;
+	SELECT h.Weekday as 'Day', h.Time as 'Time', h.TuteeID as 'Name', s.Email as 'Email', Concat(h.School,CAST(h.Number as char)) as 'Course', h.TutorID as 'StudentID'
+	FROM Hires h, Student s;
 
 CREATE VIEW ProfessorRecs AS 
 	SELECT TutorID as ProfTutorID, Count(*) as ProfNumRatings, Avg(NumEvaluation) as ProfAvgRating
@@ -150,7 +154,7 @@ CREATE VIEW RecsTTS as
 
 #Figure 3 table
 CREATE VIEW Figure3 AS
-	SELECT s.Name, s.Email, r.profTutorID, r.ProfNumRatings, r.ProfAvgRating, r.StuTutorID, r.StuNumRatings, r.StuAvgRating, r.School, r.Number, r.TutorID, r.Time, r.Semester, r.Weekday, r.TuteeID
+	SELECT s.Name, s.Email, r.profTutorID, r.ProfNumRatings, r.ProfAvgRating, r.StuTutorID, r.StuNumRatings, r.StuAvgRating, r.School, r.Number, r.TutorID, r.Time, r.Semester, r.Weekday
 	From Student s, RecsTTS r
 	Where s.StudentID=r.TutorID;
 
