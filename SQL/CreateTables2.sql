@@ -62,7 +62,7 @@ CREATE TABLE Rates (
 	Number Integer(4) NOT NULL,
 	NumEvaluation Integer(2),
 	DescEvaluation VarChar(200),
-	Semester VarChar(30),
+	Semester VarChar(30) NOT NULL,
 	Primary Key(StudentID, School, Number),
 	Foreign Key(TutorID) REFERENCES Tutor(TutorID),
 	Foreign Key(StudentID) REFERENCES User(Gtid),
@@ -104,7 +104,7 @@ CREATE TABLE Hires (
 );
 
 /*CREATED VIEWS*/
-Drop View IF EXISTS Summary1, Summary2, TutorInfo, TutorSchedule, ProfessorRecs, StudentRecs, CombinedRecExtra, RecsTTS, Figure3, TTS;
+Drop View IF EXISTS Summary1, Summary2, TutorInfo, TutorSchedule, ProfessorRecs, StudentRecs, CombinedRecExtra, RecsTTS, Figure3, TTS, TTS2;
 
 CREATE VIEW TTS as
 	SELECT *
@@ -163,17 +163,19 @@ CREATE VIEW Summary2 AS
 	From Rates r, Tutors t
 	WHERE r.TutorID=t.TutorID
 	Group by Course, Semester;
-SELECT Course, '~Avg', '', Avg(AvgRatingTA), '', Avg(AvgRatingNTA) FROM Summary2 Group by Course;
+#Averages Line+Selection clause based on user inputs of semesters
+/*SELECT Course, '~Avg', '', Avg(AvgRatingTA), '', Avg(AvgRatingNTA) FROM Summary2 Group by Course;*/
 /*SELECT * FROM Summary2 WHERE Semester='Spring' OR Semester='Summer' OR Semester=NULL */
-/*
-DROP VIEW IF Exists Summary1, Summary2;
-SET @Fall='Fall', @Spring='Spring',@Summer='Summer';
+
+/*Summary Report 1*/
+#Creates a temporary view based on the semesters selected.  Commentted out because View is dynamic based on user inputs
+/*DROP VIEW IF EXISTS Summary1;
 CREATE VIEW Summary1 AS
-	SELECT CONCAT(TTS.School, CAST(TTS.Number as char)) as 'Course', TTS.Semester, Count(DISTINCT TTS.TuteeID) as 'NumStudents', Count(DISTINCT TTS.TutorID) as 'NumTutors'
-	FROM TTS
-	WHERE Semester=@Fall
-	OR Semester=@Spring
-	OR Semester=@Summer
+	SELECT CONCAT(h.school, CAST(h.Number AS CHAR)) as 'Course', h.Semester, CountIDISTINCT h.TuteeID) as 'NumStudents', COUNT(DISTINCT h.TutorID) as 'NumTutorrs'
+	FROM Hires
+	WHERE Semester=@IncludeFall
+	OR Semester=@IncludeSpring
+	OR Semester=@IncludeSummer
 	GROUP BY Course, Semester;
 #SELECT Course, 'Total', Sum(NumStudents), Sum(NumTutors) FROM Summary1 Group by Course;
 #SELECT '~Total for all courses', '', Sum(NumStudents), Sum(NumTutors) FROM Summary1;

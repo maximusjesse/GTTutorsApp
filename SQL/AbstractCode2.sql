@@ -19,10 +19,10 @@ Select Name, Email, ProfAvgRating, ProfNumRatings, StuAvgRating, StuNumRatings
 	FROM (
 	SELECT *
 	FROM Figure3
-	WHERE 'CS'=Figure3.School
-	AND 4400=Figure3.Number
-	AND 'W'=Figure3.Weekday
-	AND '14:00:00'=Figure3.Time
+	WHERE @School=Figure3.School
+	AND @Number=Figure3.Number
+	AND @Weekday=Figure3.Weekday
+	AND @Time=Figure3.Time
 ) A
 #Figure4 Select Tutor
 Select Name, Email, Weekday, Time
@@ -36,14 +36,8 @@ Select Name, Email, Weekday, Time
 ) A
 
 /*Schedule Tutor*/
-Update TutorTimeSlots 
-Set TuteeID=$Gtid
-Where TutorID= (
-				Select StudentID 
-				FROM Student 
-				Where Name=$TutorName
-				)
-AND Time=$Time
+Insert into Hires
+Values(@TuteeID,@School,@Number,@TutorID,@Time,@Semester,@Weekday)
 
 /*Tutor Evaluation By Student*/
 INSERT INTO Rates
@@ -66,7 +60,7 @@ INSERT INTO Tutors
 Values ($ID, $School, $Number)
 //Choosing Times
 INSERT INTO Hires
-Values ($ID, $Time, $Semester, $Weekday, null, $School, $Number)
+Values ($TuteeID, $Time, $Semester, $Weekday, $TutorID, $School, $Number)
 
 /*Find Tutor Schedule*/
 SELECT Day, Time, Name, Email, Course
@@ -78,15 +72,24 @@ INSERT INTO Recommends
 Value ($TutorID, $ProfessorID, $NumEvaluation, $DescEvaluation)
 
 /*Summary Report 1*/
-Select * from Summary
+#Creates a temporary view based on the semesters selected
+SET @IncludeFall='Fall',@IncludeSpring='Spring',@IncludeSummer='Summer'
+DROP VIEW IF EXISTS Summary1;
+CREATE VIEW Summary1 AS
+	SELECT CONCAT(TRIM(h.school), TRIM(CAST(h.Number AS CHAR))) as 'Course', h.Semester, Count(Distinct h.TuteeID) as 'NumStudents', COUNT(DISTINCT h.TutorID) as 'NumTutors'
+	FROM Hires h
+	WHERE Semester=@IncludeFall
+	OR Semester=@IncludeSpring
+	OR Semester=@IncludeSummer
+	GROUP BY Course, Semester
 
 /*Summary 2 Report*/
-//Similar to Summary 1, Uses Summary2 view, which null values in Semester for totals
+//Similar to Summary 1, Uses Summary2 view
 Select *
 From Summar2
-Where Semester=$Spring
-OR Semester=$Summer
-OR Semester=$Fall
+Where Semester=@IncludeSpring
+OR Semester=@IncludeFall
+OR Semester=@IncludeSummer
 OR Semester IS NULL
 
 #Returns the boolean where Gtid exists
